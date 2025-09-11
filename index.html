@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=90%, initial-scale=1.0">
+  <title>Antrean TENS Real-Time</title>
+  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript">
+    google.charts.load('current', {'packages':['table']});
+    google.charts.setOnLoadCallback(drawTable);
+
+    function drawTable() {
+      var query = new google.visualization.Query(
+        'https://docs.google.com/spreadsheets/d/1FCmVBTGtapBsZYxZMuFSjVIKF1L0n22V8ykT6T64oqw/gviz/tq?sheet=Antrean TENS&range=B1:I50'
+      );
+      query.send(handleQueryResponse);
+    }
+
+    function handleQueryResponse(response) {
+      if (response.isError()) {
+        console.error('Error: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+        return;
+      }
+      var data = response.getDataTable();
+
+      // Terapkan formatter untuk kolom "Status"
+      // Asumsi kolom "Status" ada di kolom ke-3 (index = 2), sesuaikan dengan sheet Anda
+      var formatter = new google.visualization.ColorFormat();
+
+      // Warna sesuai status
+      formatter.addRange(undefined, undefined, 'white', null); // default
+      formatter.addRange(null, null, null, null); // fallback
+
+      data.getDistinctValues(2).forEach(function(status) {
+        if (status === "Menunggu") {
+          formatter.addRange(undefined, undefined, 'white', '#FFF176'); // merah
+        } else if (status === "Sedang Dilayani") {
+          formatter.addRange(undefined, undefined, 'white', '#E57373'); // kuning
+        } else if (status === "Selesai") {
+          formatter.addRange(undefined, undefined, 'white', '#81C784'); // hijau
+        }
+      });
+
+      formatter.format(data, 5); // Terapkan ke kolom index ke-4 (Status)
+
+      var table = new google.visualization.Table(document.getElementById('table_div'));
+      table.draw(data, {
+        showRowNumber: true,
+        width: '100%',
+        height: '100%',
+        allowHtml: true
+      });
+    }
+
+    // ⏳ Auto-refresh setiap 10 detik
+    setInterval(drawTable, 10000);
+  </script>
+</head>
+<body>
+  <h2 style="text-align:center">📊 Antrean TENS - Real Time</h2>
+  <div id="table_div" style="width:90%; margin:20px auto;"></div>
+</body>
+</html>
