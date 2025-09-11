@@ -21,27 +21,24 @@
         console.error('Error: ' + response.getMessage() + ' ' + response.getDetailedMessage());
         return;
       }
+
       var data = response.getDataTable();
 
-      // Terapkan formatter untuk kolom "Status"
-      // Asumsi kolom "Status" ada di kolom ke-3 (index = 2), sesuaikan dengan sheet Anda
-      var formatter = new google.visualization.ColorFormat();
+      // 📌 Asumsi kolom Status ada di kolom ke-3 (index = 2)
+      var statusCol = 5;
 
-      // Warna sesuai status
-      formatter.addRange(undefined, undefined, 'white', null); // default
-      formatter.addRange(null, null, null, null); // fallback
+      // Loop setiap baris → ubah warna sesuai status
+      for (var i = 0; i < data.getNumberOfRows(); i++) {
+        var status = data.getValue(i, statusCol);
 
-      data.getDistinctValues(2).forEach(function(status) {
         if (status === "Menunggu") {
-          formatter.addRange(undefined, undefined, 'white', '#FFF176'); // merah
+          data.setProperty(i, statusCol, 'style', 'background-color:#E57373; color:red; font-weight:bold;');
         } else if (status === "Sedang Dilayani") {
-          formatter.addRange(undefined, undefined, 'white', '#E57373'); // kuning
+          data.setProperty(i, statusCol, 'style', 'background-color:#FFF176; color:yellow; font-weight:bold;');
         } else if (status === "Selesai") {
-          formatter.addRange(undefined, undefined, 'white', '#81C784'); // hijau
+          data.setProperty(i, statusCol, 'style', 'background-color:#81C784; color:green; font-weight:bold;');
         }
-      });
-
-      formatter.format(data, 5); // Terapkan ke kolom index ke-4 (Status)
+      }
 
       var table = new google.visualization.Table(document.getElementById('table_div'));
       table.draw(data, {
@@ -52,7 +49,7 @@
       });
     }
 
-    // ⏳ Auto-refresh setiap 10 detik
+    // ⏳ Auto-refresh setiap 3 detik
     setInterval(drawTable, 10000);
   </script>
 </head>
