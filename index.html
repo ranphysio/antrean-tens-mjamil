@@ -11,7 +11,7 @@
 
     function drawTable() {
       var query = new google.visualization.Query(
-        'https://docs.google.com/spreadsheets/d/1FCmVBTGtapBsZYxZMuFSjVIKF1L0n22V8ykT6T64oqw/gviz/tq?sheet=Antrean TENS&range=B1:I50'
+        'https://docs.google.com/spreadsheets/d/1FCmVBTGtapBsZYxZMuFSjVIKF1L0n22V8ykT6T64oqw/gviz/tq?sheet=Antrean TENS&range=A1:I50'
       );
       query.send(handleQueryResponse);
     }
@@ -31,7 +31,7 @@
       for (var i = 0; i < data.getNumberOfRows(); i++) {
         var status = data.getValue(i, statusCol);
 
-        if (status === "Menunggu") {
+        if (status === "Dalam Menunggu") {
           data.setProperty(i, statusCol, 'style', 'background-color:#E57373; color:red; font-weight:bold;');
         } else if (status === "Sedang Dilayani") {
           data.setProperty(i, statusCol, 'style', 'background-color:#FFF176; color:yellow; font-weight:bold;');
@@ -49,7 +49,7 @@
       });
     }
 
-    // ⏳ Auto-refresh setiap 3 detik
+    // ⏳ Auto-refresh setiap 2 detik
     setInterval(drawTable, 10000);
   </script>
 </head>
@@ -58,3 +58,4 @@
   <div id="table_div" style="width:90%; margin:20px auto;"></div>
 </body>
 </html>
+
