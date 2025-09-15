@@ -11,7 +11,7 @@
 
     function drawTable() {
       var query = new google.visualization.Query(
-        'https://docs.google.com/spreadsheets/d/1FCmVBTGtapBsZYxZMuFSjVIKF1L0n22V8ykT6T64oqw/gviz/tq?sheet=Antrean TENS'
+        'https://docs.google.com/spreadsheets/d/1FCmVBTGtapBsZYxZMuFSjVIKF1L0n22V8ykT6T64oqw/gviz/tq?sheet=Antrean TENS&range=A1:J50'
       );
       query.send(handleQueryResponse);
     }
@@ -22,80 +22,39 @@
         return;
       }
 
-      var fullData = response.getDataTable();
+      var data = response.getDataTable();
 
-      // Buat DataTable baru hanya dengan kolom yang diinginkan
-      var filteredData = new google.visualization.DataTable();
+      // 📌 Asumsi kolom Status ada di kolom ke-3 (index = 2)
+      var statusCol = 5;
 
-      // Tambahkan header sesuai kebutuhan
-      filteredData.addColumn('string', 'Timestamp');
-      filteredData.addColumn('string', 'Nama Lengkap Pasien');
-      filteredData.addColumn('string', 'Nomor Urut Pemanggilan');
-      filteredData.addColumn('string', 'Nama Fisioterapis');
-      filteredData.addColumn('string', 'Kode Alat');
-      filteredData.addColumn('string', 'Status');
-      filteredData.addColumn('string', 'Waktu Mulai');
-      filteredData.addColumn('string', 'Waktu Selesai');
-      filteredData.addColumn('string', 'Sisa Waktu');
-      filteredData.addColumn('string', 'Nomor Kamar');
+      // Loop setiap baris → ubah warna sesuai status
+      for (var i = 0; i < data.getNumberOfRows(); i++) {
+        var status = data.getValue(i, statusCol);
 
-      // Index kolom sesuai urutan di sheet (0-based)
-      // Sesuaikan angka ini dengan kolom di sheet kamu
-      var colTimestamp  = 0; // A
-      var colNamaPasien = 1; // B
-      var colNomorUrut  = 2; // C
-      var colFisio      = 3; // D
-      var colKodeAlat   = 4; // E
-      var colStatus     = 5; // F
-      var colMulai      = 6; // G
-      var colSelesai    = 7; // H
-      var colSisa       = 8; // I
-      var colKamar      = 9; // J
-
-      // Loop baris
-      for (var i = 0; i < fullData.getNumberOfRows(); i++) {
-        var status = fullData.getValue(i, colStatus);
-
-        // Buat HTML dengan style warna sesuai status
-        var statusStyled = status;
         if (status === "Dalam Menunggu") {
-          statusStyled = '<span style="background-color:#E57373;color:white;padding:3px 6px;border-radius:4px;font-weight:bold;">' + status + '</span>';
+          data.setProperty(i, statusCol, 'style', 'background-color:#E57373; color:white; font-weight:bold;');
         } else if (status === "Sedang Dilayani") {
-          statusStyled = '<span style="background-color:#FFF176;color:black;padding:3px 6px;border-radius:4px;font-weight:bold;">' + status + '</span>';
+          data.setProperty(i, statusCol, 'style', 'background-color:#FFF176; color:black; font-weight:bold;');
         } else if (status === "Selesai") {
-          statusStyled = '<span style="background-color:#81C784;color:white;padding:3px 6px;border-radius:4px;font-weight:bold;">' + status + '</span>';
+          data.setProperty(i, statusCol, 'style', 'background-color:#81C784; color:white; font-weight:bold;');
         }
-
-        filteredData.addRow([
-          fullData.getValue(i, colTimestamp),
-          fullData.getValue(i, colNamaPasien),
-          fullData.getValue(i, colNomorUrut),
-          fullData.getValue(i, colFisio),
-          fullData.getValue(i, colKodeAlat),
-          statusStyled,
-          fullData.getValue(i, colMulai),
-          fullData.getValue(i, colSelesai),
-          fullData.getValue(i, colSisa),
-          fullData.getValue(i, colKamar)
-        ]);
       }
 
-      // Tampilkan tabel
       var table = new google.visualization.Table(document.getElementById('table_div'));
-      table.draw(filteredData, {
+      table.draw(data, {
         showRowNumber: true,
         width: '100%',
         height: '100%',
-        allowHtml: true // ini penting agar warna/status styled tampil
+        allowHtml: true
       });
     }
 
-    // Auto-refresh setiap 2 detik
+    // ⏳ Auto-refresh setiap 2 detik
     setInterval(drawTable, 10000);
   </script>
 </head>
 <body>
   <h2 style="text-align:center">📊 Antrean TENS Fisioterapi - RSUP Dr.M.Djamil Padang</h2>
-  <div id="table_div" style="width:95%; margin:20px auto;"></div>
+  <div id="table_div" style="width:90%; margin:20px auto;"></div>
 </body>
 </html>
