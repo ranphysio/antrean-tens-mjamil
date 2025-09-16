@@ -39,8 +39,8 @@
           data.setProperty(i, statusCol, 'style', 'background-color:#81C784; color:white; font-weight:bold;');
         } else if (status === "Cancel" || status === "Dibatalkan") {
           // 🆕 Tambahan untuk Cancel
-          data.setProperty(i, statusCol, 'style', 
-            'background-color:#000000; color:white; font-weight:bold;');
+          data.setValue(i, statusCol, "Dibatalkan"); // menimpa teks
+          data.setProperty(i, statusCol, 'style', 'background-color:#000000; color:white; font-weight:bold;');
         }
       }
 
@@ -62,4 +62,5 @@
   <div id="table_div" style="width:90%; margin:20px auto;"></div>
 </body>
 </html>
+
 
