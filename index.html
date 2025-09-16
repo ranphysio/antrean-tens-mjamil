@@ -41,7 +41,7 @@
         } else if (status === "Selesai") {
           data.setProperty(i, statusCol, 'style', 
             'background-color:#81C784; color:white; font-weight:bold;');
-        } else if (status === "Cancel" || status === "Dibatalkan") {
+        } else if (status === "Cancel") {
           // 🆕 Tambahan untuk Cancel:
           // tulis “Dibatalkan” di kolom Sisa Waktu juga
           data.setValue(i, sisaWaktuCol, "Dibatalkan");
@@ -72,3 +72,4 @@
   <div id="table_div" style="width:90%; margin:20px auto;"></div>
 </body>
 </html>
+
