@@ -39,7 +39,17 @@
           data.setProperty(i, statusCol, 'style', 
             'background-color:#FFF176; color:black; font-weight:bold;');
         } else if (status === "Selesai") {
+          // 🆕 Tambahan: cek asal selesai
+          if (asal && asal.toLowerCase() === "manual") {
+            // kalau manual klik selesai
+            data.setValue(i, sisaWaktuCol, "Selesai");
+          } else {
+            // default atau auto timer habis
+            data.setValue(i, sisaWaktuCol, "Waktu Habis");
+          }
           data.setProperty(i, statusCol, 'style', 
+            'background-color:#81C784; color:white; font-weight:bold;');
+          data.setProperty(i, sisaWaktuCol, 'style', 
             'background-color:#81C784; color:white; font-weight:bold;');
         } else if (status === "Cancel") {
           // 🆕 Tambahan untuk Cancel:
@@ -63,7 +73,7 @@
       });
     }
 
-    // ⏳ Auto-refresh setiap 2 detik
+    // ⏳ Auto-refresh setiap 1 detik
     setInterval(drawTable, 10000);
   </script>
 </head>
@@ -72,6 +82,7 @@
   <div id="table_div" style="width:90%; margin:20px auto;"></div>
 </body>
 </html>
+
 
 
 
