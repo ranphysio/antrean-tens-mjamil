@@ -11,7 +11,7 @@
 
     function drawTable() {
       var query = new google.visualization.Query(
-        'https://docs.google.com/spreadsheets/d/1FCmVBTGtapBsZYxZMuFSjVIKF1L0n22V8ykT6T64oqw/gviz/tq?sheet=Antrean TENS&range=A1:J50'
+        'https://docs.google.com/spreadsheets/d/1FCmVBTGtapBsZYxZMuFSjVIKF1L0n22V8ykT6T64oqw/gviz/tq?sheet=Antrean TENS'
       );
       query.send(handleQueryResponse);
     }
@@ -73,8 +73,8 @@
       });
     }
 
-    // ⏳ Auto-refresh setiap 1 detik
-    setInterval(drawTable, 10000);
+    // ⏳ Auto-refresh setiap 2 detik
+    setInterval(drawTable, 2000);
   </script>
 </head>
 <body>
@@ -82,6 +82,7 @@
   <div id="table_div" style="width:90%; margin:20px auto;"></div>
 </body>
 </html>
+
 
 
 
