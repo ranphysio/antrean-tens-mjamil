@@ -1,90 +1,55 @@
-<!DOCTYPE html> 
-<html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=90%, initial-scale=1.0">
-  <title>Antrean TENS Real-Time</title>
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-  <script type="text/javascript">
-    google.charts.load('current', {'packages':['table']});
-    google.charts.setOnLoadCallback(drawTable);
+function handleQueryResponse(response) {
+  if (response.isError()) {
+    console.error('Error: ' + response.getMessage() + ' ' + response.getDetailedMessage());
+    return;
+  }
 
-    function drawTable() {
-      var query = new google.visualization.Query(
-        'https://docs.google.com/spreadsheets/d/1FCmVBTGtapBsZYxZMuFSjVIKF1L0n22V8ykT6T64oqw/gviz/tq?sheet=Antrean TENS'
-      );
-      query.send(handleQueryResponse);
-    }
+  var data = response.getDataTable();
 
-    function handleQueryResponse(response) {
-      if (response.isError()) {
-        console.error('Error: ' + response.getMessage() + ' ' + response.getDetailedMessage());
-        return;
+  // 📌 Tentukan nomor kolom (A=0, B=1, C=2, dst.)
+  var statusCol = 5;      // Kolom F (Status)
+  var asalCol = 6;        // 🔧 PERBAIKAN: Kolom G (Asal Selesai). Ganti jika perlu!
+  var sisaWaktuCol = 8;   // Kolom I (Sisa Waktu)
+
+  // Loop setiap baris → ubah warna & isi sesuai status
+  for (var i = 0; i < data.getNumberOfRows(); i++) {
+    var status = data.getValue(i, statusCol);
+    // 🔧 PERBAIKAN: Baca nilai dari kolom 'asal' untuk baris ini
+    var asal = data.getValue(i, asalCol); 
+
+    if (status === "Dalam Menunggu") {
+      data.setProperty(i, statusCol, 'style',
+        'background-color:#E57373; color:white; font-weight:bold;');
+    } else if (status === "Sedang Dilayani") {
+      data.setProperty(i, statusCol, 'style',
+        'background-color:#FFF176; color:black; font-weight:bold;');
+    } else if (status === "Selesai") {
+      // Cek 'asal' yang nilainya sudah kita ambil dari Google Sheet
+      if (asal && asal.toString().toLowerCase() === "manual") {
+        // kalau manual klik selesai
+        data.setValue(i, sisaWaktuCol, "Selesai");
+      } else {
+        // default atau auto timer habis
+        data.setValue(i, sisaWaktuCol, "Waktu Habis");
       }
-
-      var data = response.getDataTable();
-
-      // 📌 Kolom Status & Sisa Waktu (index berdasarkan A=0)
-      var statusCol = 5;      // F (Status)
-      var sisaWaktuCol = 8;   // I (Sisa Waktu)
-
-      // Loop setiap baris → ubah warna & isi sesuai status
-      for (var i = 0; i < data.getNumberOfRows(); i++) {
-        var status = data.getValue(i, statusCol);
-
-        if (status === "Dalam Menunggu") {
-          data.setProperty(i, statusCol, 'style', 
-            'background-color:#E57373; color:white; font-weight:bold;');
-        } else if (status === "Sedang Dilayani") {
-          data.setProperty(i, statusCol, 'style', 
-            'background-color:#FFF176; color:black; font-weight:bold;');
-        } else if (status === "Selesai") {
-          // 🆕 Tambahan: cek asal selesai
-          if (asal && asal.toLowerCase() === "manual") {
-            // kalau manual klik selesai
-            data.setValue(i, sisaWaktuCol, "Selesai");
-          } else {
-            // default atau auto timer habis
-            data.setValue(i, sisaWaktuCol, "Waktu Habis");
-          }
-          data.setProperty(i, statusCol, 'style', 
-            'background-color:#81C784; color:white; font-weight:bold;');
-          data.setProperty(i, sisaWaktuCol, 'style', 
-            'background-color:#81C784; color:white; font-weight:bold;');
-        } else if (status === "Cancel") {
-          // 🆕 Tambahan untuk Cancel:
-          // tulis “Dibatalkan” di kolom Sisa Waktu juga
-          data.setValue(i, sisaWaktuCol, "Dibatalkan");
-          // style hitam untuk status
-          data.setProperty(i, statusCol, 'style', 
-            'background-color:#000000; color:white; font-weight:bold;');
-          // style hitam untuk sisa waktu
-          data.setProperty(i, sisaWaktuCol, 'style', 
-            'background-color:#000000; color:white; font-weight:bold;');
-        }
-      }
-
-      var table = new google.visualization.Table(document.getElementById('table_div'));
-      table.draw(data, {
-        showRowNumber: true,
-        width: '100%',
-        height: '100%',
-        allowHtml: true
-      });
+      data.setProperty(i, statusCol, 'style',
+        'background-color:#81C784; color:white; font-weight:bold;');
+      data.setProperty(i, sisaWaktuCol, 'style',
+        'background-color:#81C784; color:white; font-weight:bold;');
+    } else if (status === "Cancel") {
+      data.setValue(i, sisaWaktuCol, "Dibatalkan");
+      data.setProperty(i, statusCol, 'style',
+        'background-color:#000000; color:white; font-weight:bold;');
+      data.setProperty(i, sisaWaktuCol, 'style',
+        'background-color:#000000; color:white; font-weight:bold;');
     }
+  }
 
-    // ⏳ Auto-refresh setiap 2 detik
-    setInterval(drawTable, 2000);
-  </script>
-</head>
-<body>
-  <h2 style="text-align:center">📊 Antrean TENS Fisioterapi - RSUP Dr.M.Djamil Padang</h2>
-  <div id="table_div" style="width:90%; margin:20px auto;"></div>
-</body>
-</html>
-
-
-
-
-
-
+  var table = new google.visualization.Table(document.getElementById('table_div'));
+  table.draw(data, {
+    showRowNumber: true,
+    width: '100%',
+    height: '100%',
+    allowHtml: true
+  });
+}
