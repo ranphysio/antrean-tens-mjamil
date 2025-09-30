@@ -54,6 +54,14 @@
           // style hitam untuk sisa waktu
           data.setProperty(i, sisaWaktuCol, 'style', 
             'background-color:#000000; color:white; font-weight:bold;');
+        } else if (status === "Hold") {
+          data.setValue(i, sisaWaktuCol, "Ditahan");
+          // style pink untuk status
+          data.setProperty(i, statusCol, 'style', 
+            'background-color:#F48FB1; color:white; font-weight:bold;');
+          // style pink untuk sisa waktu
+          data.setProperty(i, sisaWaktuCol, 'style', 
+            'background-color:#F48FB1; color:white; font-weight:bold;');
         }
       }
 
@@ -75,4 +83,5 @@
   <div id="table_div" style="width:90%; margin:20px auto;"></div>
 </body>
 </html>
+
 
